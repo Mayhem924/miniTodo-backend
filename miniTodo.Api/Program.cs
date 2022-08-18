@@ -1,15 +1,33 @@
+using Microsoft.EntityFrameworkCore;
+using miniTodo.Api.Configuration;
+using miniTodo.Api.Options;
+using miniTodo.Api.Services;
+using miniTodo.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var services = builder.Services;
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Services
+services.AddControllers();
 
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+
+services.AddAppAuthentication(builder.Configuration);
+
+services.AddDbContextFactory<ApplicationDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("Default");
+    options.UseSqlite(connectionString);
+});
+
+services.AddSingleton<JwtSettings>();
+services.AddSingleton<UserService>();
+
+// Build application
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,6 +36,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

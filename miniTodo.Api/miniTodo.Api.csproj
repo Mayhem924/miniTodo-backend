@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data\miniTodo.Data\miniTodo.Data.csproj" />
-    <ProjectReference Include="..\Services\miniTodo.Services.JwtSettings\miniTodo.Services.JwtToken.csproj" />
+    <ProjectReference Include="..\Services\miniTodo.Services.JwtToken\miniTodo.Services.JwtToken.csproj" />
     <ProjectReference Include="..\Services\miniTodo.Services.UserAccount\miniTodo.Services.UserAccount.csproj" />
   </ItemGroup>
 

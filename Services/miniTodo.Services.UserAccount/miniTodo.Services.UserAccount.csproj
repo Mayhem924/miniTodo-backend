@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Data\miniTodo.Data\miniTodo.Data.csproj" />
-    <ProjectReference Include="..\miniTodo.Services.JwtSettings\miniTodo.Services.JwtToken.csproj" />
+    <ProjectReference Include="..\miniTodo.Services.JwtToken\miniTodo.Services.JwtToken.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,23 +3,19 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace miniTodo.Services.JwtSettings;
+namespace miniTodo.Services.JwtToken;
 
-public class JwtSettings : IJwtSettings
+public class JwtToken : IJwtToken
 {
-	public string Secret { get; init; }
+    public string Secret { get; init; }
 
-	public JwtSettings()
-	{
-		//Secret = configuration["JwtSettings:Secret"];
-		Secret = "O9KLvFcjRj8oaRzVggpCEbQd3Py4qOL8k0gIoZhDqa"; // TODO: Replace with IConfiguration
-	}
-
-	public string GenerateToken(string userName)
-	{
+    public string GenerateToken(string userName, string userEmail)
+    {
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, userName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, userEmail),
         };
 
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));

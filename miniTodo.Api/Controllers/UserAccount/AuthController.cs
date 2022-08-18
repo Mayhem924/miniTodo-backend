@@ -43,6 +43,13 @@ public class AuthController : ControllerBase
         };
 
         var token = await userAccount.Register(model);
-        return Ok(token);
+
+        var result = new RegisteredUserResponse
+        {
+            UserName = request.UserName,
+            AccessToken = token
+        };
+
+        return Ok(result);
     }
 }

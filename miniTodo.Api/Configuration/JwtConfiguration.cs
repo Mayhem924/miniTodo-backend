@@ -2,12 +2,20 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using miniTodo.Services.JwtToken;
 using System.Text;
 
 public static class JwtConfiguration
 {
     public static IServiceCollection AddAppAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
+        var jwtSettings = new JwtToken
+        {
+            Secret = configuration["JwtSettings:Secret"]
+        };
+
+        services.AddSingleton<IJwtToken>(jwtSettings);
+
         services
             .AddAuthentication(options =>
             {

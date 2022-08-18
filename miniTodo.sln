@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{A2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miniTodo.Services.UserAccount", "Services\miniTodo.Services.UserAccount\miniTodo.Services.UserAccount.csproj", "{F7894A17-1BC0-455F-94AA-263102DFD06A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miniTodo.Services.JwtSettings", "Services\miniTodo.Services.JwtSettings\miniTodo.Services.JwtSettings.csproj", "{21BF4053-595C-418F-A0F4-551E69232861}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miniTodo.Services.JwtToken", "Services\miniTodo.Services.JwtSettings\miniTodo.Services.JwtToken.csproj", "{21BF4053-595C-418F-A0F4-551E69232861}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

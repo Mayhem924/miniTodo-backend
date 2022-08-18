@@ -3,17 +3,17 @@
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Data;
 using miniTodo.Data.Entities;
-using miniTodo.Services.JwtSettings;
+using miniTodo.Services.JwtToken;
 using miniTodo.Services.UserAccount.Models;
 
 public class UserAccount : IUserAccount
 {
 	private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
-	private readonly IJwtSettings jwtSettings;
+	private readonly IJwtToken jwtSettings;
 
 	public UserAccount(
 		IDbContextFactory<ApplicationDbContext> contextFactory,
-		IJwtSettings jwtSettings)
+		IJwtToken jwtSettings)
 	{
 		this.contextFactory = contextFactory;
 		this.jwtSettings = jwtSettings;
@@ -34,12 +34,14 @@ public class UserAccount : IUserAccount
 	public async Task<string> Register(RegisterUserModel model)
 	{
 		using var dbContext = await contextFactory.CreateDbContextAsync();
-		var existingUser = dbContext.Users.FirstOrDefault(x => x.Name == model.UserName);
 
-		if (existingUser is not null)
+		if (dbContext.Users.Any(x => x.Name == model.UserName))
 			throw new Exception("This UserName is already taken!");
 
-		var user = new User
+        if (dbContext.Users.Any(x => x.Email == model.Email))
+            throw new Exception("This Email is already taken!");
+
+        var user = new User
 		{
 			Name = model.UserName,
 			Password = model.Password,

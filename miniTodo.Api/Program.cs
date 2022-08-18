@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Api.Configuration;
 using miniTodo.Data;
-using miniTodo.Services.JwtSettings;
 using miniTodo.Services.UserAccount;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +13,7 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
+// Configurations
 services.AddAppAuthentication(builder.Configuration);
 
 services.AddDbContextFactory<ApplicationDbContext>(options =>
@@ -22,7 +22,6 @@ services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
-services.AddSingleton<IJwtSettings, JwtSettings>();
 services.AddSingleton<IUserAccount, UserAccount>();
 
 // Build application

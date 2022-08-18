@@ -27,7 +27,7 @@ public class UserAccount : IUserAccount
 		if (user is null)
 			throw new Exception("Incorrect UserName or Password");
 
-		var token = jwtSettings.GenerateToken(user.Name);
+		var token = jwtSettings.GenerateToken(user.Name, user.Email);
 		return token;
 	}
 
@@ -44,13 +44,14 @@ public class UserAccount : IUserAccount
         var user = new User
 		{
 			Name = model.UserName,
+			Email = model.Email,
 			Password = model.Password,
 		};
 
 		dbContext.Users.Add(user);
 		await dbContext.SaveChangesAsync();
 
-		var token = jwtSettings.GenerateToken(user.Name);
+		var token = jwtSettings.GenerateToken(user.Name, user.Email);
 		return token;
 	}
 }

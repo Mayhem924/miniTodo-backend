@@ -38,6 +38,7 @@ public class AuthController : ControllerBase
         var model = new RegisterUserModel
         {
             UserName = request.UserName,
+            Email = request.Email,
             Password = request.Password,
             ConfirmPassword = request.ConfirmPassword
         };

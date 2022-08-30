@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Api.Configuration;
 using miniTodo.Data;
+using miniTodo.Services.JwtToken;
 using miniTodo.Services.UserAccount;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,10 +12,10 @@ var services = builder.Services;
 services.AddControllers();
 
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
 
 // Configurations
 services.AddAppAuthentication(builder.Configuration);
+services.AddAppSwagger();
 
 services.AddDbContextFactory<ApplicationDbContext>(options =>
 {
@@ -22,22 +23,26 @@ services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
-services.AddSingleton<IUserAccount, UserAccount>();
+services.AddScoped<IUserAccount, UserAccount>();
+services.AddScoped<IJwtGenerator, JwtGenerator>();
 
 // Build application
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
+app.UseAppSwagger(builder.Configuration);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+    var dbContext = contextFactory.CreateDbContext();
+
+    dbContext.Database.Migrate();
+}
 
 app.Run();

@@ -6,10 +6,16 @@ using miniTodo.Data.Entities;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        Database.EnsureCreated();
+        //Database.EnsureCreated();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
     }
 }

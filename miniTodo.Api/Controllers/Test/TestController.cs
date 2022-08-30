@@ -7,14 +7,25 @@ namespace miniTodo.Api.Controllers.Test;
 [Route("[controller]")]
 public class TestController : ControllerBase
 {
+    /// <summary>
+    /// Doesn't require a JWT token
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("Public")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Public()
     {
         return Ok("Hello stranger");
     }
 
-    [HttpGet("Secure")]
+    /// <summary>
+    /// Requires a JWT token
+    /// </summary>
+    /// <returns></returns>
     [Authorize]
+    [HttpGet("Secure")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult Secure()
     {
         return Ok("Hello user");

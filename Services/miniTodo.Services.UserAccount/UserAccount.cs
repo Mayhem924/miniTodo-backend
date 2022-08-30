@@ -3,55 +3,65 @@
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Data;
 using miniTodo.Data.Entities;
-using miniTodo.Services.JwtToken;
 using miniTodo.Services.UserAccount.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 public class UserAccount : IUserAccount
 {
 	private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
-	private readonly IJwtToken jwtSettings;
 
-	public UserAccount(
-		IDbContextFactory<ApplicationDbContext> contextFactory,
-		IJwtToken jwtSettings)
+	public UserAccount(IDbContextFactory<ApplicationDbContext> contextFactory)
 	{
 		this.contextFactory = contextFactory;
-		this.jwtSettings = jwtSettings;
 	}
 
-	public async Task<string> Login(LoginUserModel model)
+	public async Task<User> Login(LoginUserModel model)
 	{
 		using var dbContext = await contextFactory.CreateDbContextAsync();
-		var user = dbContext.Users.FirstOrDefault(x => x.Name == model.UserName && x.Password == model.Password);
+
+		var user = await dbContext.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName);
 
 		if (user is null)
-			throw new Exception("Incorrect UserName or Password");
+			throw new Exception("User not found!");
 
-		var token = jwtSettings.GenerateToken(user.Name, user.Email);
-		return token;
+		var hashedPassword = HashPasswordSHA256(model.Password);
+
+		if (user.PasswordHash != hashedPassword)
+			throw new Exception("Incorrect password!");
+
+		return user;
 	}
 
-	public async Task<string> Register(RegisterUserModel model)
+	public async Task<User> Register(RegisterUserModel model)
 	{
 		using var dbContext = await contextFactory.CreateDbContextAsync();
 
-		if (dbContext.Users.Any(x => x.Name == model.UserName))
+		if (dbContext.Users.Any(x => x.UserName == model.UserName))
 			throw new Exception("This UserName is already taken!");
 
-        if (dbContext.Users.Any(x => x.Email == model.Email))
-            throw new Exception("This Email is already taken!");
-
-        var user = new User
+		var user = new User
 		{
-			Name = model.UserName,
-			Email = model.Email,
-			Password = model.Password,
+			UserName = model.UserName,
+			PasswordHash = HashPasswordSHA256(model.Password),
 		};
 
 		dbContext.Users.Add(user);
 		await dbContext.SaveChangesAsync();
 
-		var token = jwtSettings.GenerateToken(user.Name, user.Email);
-		return token;
+		return user;
+	}
+
+	public async Task<string> RefreshToken(RefreshTokenModel model)
+	{
+		return null;
+	}
+
+	private static string HashPasswordSHA256(string password)
+	{
+		var valueBytes = Encoding.UTF8.GetBytes(password);
+		var hashedValue = SHA256.HashData(valueBytes);
+
+		return Convert.ToHexString(hashedValue);
 	}
 }

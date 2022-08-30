@@ -2,19 +2,23 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using miniTodo.Services.JwtToken;
 using System.Text;
 
 public static class JwtConfiguration
 {
     public static IServiceCollection AddAppAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtSettings = new JwtToken
+        var validationTokenParameters = new TokenValidationParameters
         {
-            Secret = configuration["JwtSettings:Secret"]
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtSettings:Secret"])),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            RequireExpirationTime = false,
+            ValidateLifetime = true
         };
-
-        services.AddSingleton<IJwtToken>(jwtSettings);
+ 
+        services.AddSingleton(validationTokenParameters);
 
         services
             .AddAuthentication(options =>
@@ -26,15 +30,7 @@ public static class JwtConfiguration
             .AddJwtBearer(bearer =>
             {
                 bearer.SaveToken = true;
-                bearer.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtSettings:Secret"])),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RequireExpirationTime = false,
-                    ValidateLifetime = true
-                };
+                bearer.TokenValidationParameters = validationTokenParameters;
             });
 
         return services;

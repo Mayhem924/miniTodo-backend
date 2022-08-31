@@ -7,7 +7,6 @@ using miniTodo.Services.UserAccount;
 using miniTodo.Services.UserAccount.Models;
 
 [ApiController]
-[Route("[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IUserAccount userAccount;
@@ -23,7 +22,7 @@ public class AuthController : ControllerBase
     /// Get token with a registered user information
     /// </summary>
     /// <param name="request">User's data</param>
-    [HttpPost("Login")]
+    [HttpPost("identity/login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticationResponse))]
     public async Task<IActionResult> Login(LoginUserRequest request)
     {
@@ -52,7 +51,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <param name="request">User's data</param>
     /// <returns>Authentication result</returns>
-    [HttpPost("Register")]
+    [HttpPost("identity/register")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AuthenticationResponse))]
     public async Task<IActionResult> Register(RegisterUserRequest request)
     {
@@ -62,6 +61,7 @@ public class AuthController : ControllerBase
         var model = new RegisterUserModel
         {
             UserName = request.UserName,
+            Email = request.Email,
             Password = request.Password
         };
 

@@ -40,9 +40,13 @@ public class UserAccount : IUserAccount
 		if (dbContext.Users.Any(x => x.UserName == model.UserName))
 			throw new Exception("This UserName is already taken!");
 
-		var user = new User
+        if (dbContext.Users.Any(x => x.Email == model.Email))
+            throw new Exception("This Email is already taken!");
+
+        var user = new User
 		{
 			UserName = model.UserName,
+			Email = model.Email,
 			PasswordHash = HashPasswordSHA256(model.Password),
 		};
 

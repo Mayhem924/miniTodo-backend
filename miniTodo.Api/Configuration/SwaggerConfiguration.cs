@@ -10,6 +10,7 @@ public static class SwaggerConfiguration
     {
         services.AddSwaggerGen(options =>
         {
+            options.SupportNonNullableReferenceTypes();
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "miniTodo Backend", Version = "v1" });
 
             var security = new Dictionary<string, IEnumerable<string>>

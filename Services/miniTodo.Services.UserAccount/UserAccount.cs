@@ -37,11 +37,8 @@ public class UserAccount : IUserAccount
 	{
 		using var dbContext = await contextFactory.CreateDbContextAsync();
 
-		if (dbContext.Users.Any(x => x.UserName == model.UserName))
-			throw new Exception("This UserName is already taken!");
-
-        if (dbContext.Users.Any(x => x.Email == model.Email))
-            throw new Exception("This Email is already taken!");
+		if (await dbContext.Users.AnyAsync(x => x.UserName == model.UserName || x.Email == model.Email))
+			throw new Exception("This user credentionals are already taken!");
 
         var user = new User
 		{
@@ -50,7 +47,7 @@ public class UserAccount : IUserAccount
 			PasswordHash = HashPasswordSHA256(model.Password),
 		};
 
-		dbContext.Users.Add(user);
+		await dbContext.Users.AddAsync(user);
 		await dbContext.SaveChangesAsync();
 
 		return user;

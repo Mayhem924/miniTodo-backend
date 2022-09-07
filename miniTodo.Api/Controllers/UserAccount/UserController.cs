@@ -7,12 +7,12 @@ using miniTodo.Services.UserAccount;
 using miniTodo.Services.UserAccount.Models;
 
 [ApiController]
-public class AuthController : ControllerBase
+public class UserController : ControllerBase
 {
     private readonly IUserAccount userAccount;
     private readonly IJwtGenerator jwtGenerator;
 
-    public AuthController(IUserAccount userAccount, IJwtGenerator jwtGenerator)
+    public UserController(IUserAccount userAccount, IJwtGenerator jwtGenerator)
     {
         this.userAccount = userAccount;
         this.jwtGenerator = jwtGenerator;
@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
     /// Get token with a registered user information
     /// </summary>
     /// <param name="request">User's data</param>
-    [HttpPost("identity/login")]
+    [HttpPost("user/login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticationResponse))]
     public async Task<IActionResult> Login(LoginUserRequest request)
     {
@@ -51,7 +51,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <param name="request">User's data</param>
     /// <returns>Authentication result</returns>
-    [HttpPost("identity/register")]
+    [HttpPost("user/register")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AuthenticationResponse))]
     public async Task<IActionResult> Register(RegisterUserRequest request)
     {
@@ -76,6 +76,6 @@ public class AuthController : ControllerBase
             RefreshToken = null
         };
 
-        return Created(string.Empty, result);
+        return Ok(result);
     }
 }

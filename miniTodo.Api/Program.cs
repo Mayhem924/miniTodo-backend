@@ -23,8 +23,8 @@ services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
-services.AddScoped<IUserAccount, UserAccount>();
-services.AddScoped<IJwtGenerator, JwtGenerator>();
+services.AddSingleton<IUserAccount, UserAccount>();
+services.AddSingleton<IJwtGenerator, JwtGenerator>();
 
 // Build application
 var app = builder.Build();

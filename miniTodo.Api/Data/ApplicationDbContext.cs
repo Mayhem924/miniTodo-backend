@@ -1,7 +1,7 @@
-﻿namespace miniTodo.Data;
+﻿namespace miniTodo.Api.Data;
 
 using Microsoft.EntityFrameworkCore;
-using miniTodo.Data.Entities;
+using miniTodo.Api.Data.Entities;
 
 public class ApplicationDbContext : DbContext
 {

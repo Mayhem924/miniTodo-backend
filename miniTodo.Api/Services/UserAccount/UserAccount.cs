@@ -1,8 +1,8 @@
 ﻿namespace miniTodo.Services.UserAccount;
 
 using Microsoft.EntityFrameworkCore;
-using miniTodo.Data;
-using miniTodo.Data.Entities;
+using miniTodo.Api.Data;
+using miniTodo.Api.Data.Entities;
 using miniTodo.Services.UserAccount.Models;
 using System.Security.Cryptography;
 using System.Text;

@@ -1,4 +1,4 @@
-﻿namespace miniTodo.Data.Entities;
+﻿namespace miniTodo.Api.Data.Entities;
 
 public class User
 {

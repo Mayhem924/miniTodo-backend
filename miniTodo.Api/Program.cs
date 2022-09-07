@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Api.Configuration;
-using miniTodo.Data;
+using miniTodo.Api.Data;
 using miniTodo.Services.JwtToken;
 using miniTodo.Services.UserAccount;
 

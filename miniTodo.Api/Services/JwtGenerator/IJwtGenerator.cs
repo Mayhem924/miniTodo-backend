@@ -1,6 +1,6 @@
-﻿using miniTodo.Data.Entities;
+﻿namespace miniTodo.Services.JwtToken;
 
-namespace miniTodo.Services.JwtToken;
+using miniTodo.Api.Data.Entities;
 
 public interface IJwtGenerator
 {

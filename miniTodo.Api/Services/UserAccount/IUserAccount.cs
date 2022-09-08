@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 public interface IUserAccount
 {
-    Task<User> Login(LoginUserModel model);
+    Task<RefreshToken> Login(LoginUserModel model);
     Task<User> Register(RegisterUserModel model);
 }

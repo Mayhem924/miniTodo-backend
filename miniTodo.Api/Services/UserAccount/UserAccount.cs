@@ -19,7 +19,7 @@ public class UserAccount : IUserAccount
 		this.jwtGenerator = jwtGenerator;
 	}
 
-	public async Task<User> Login(LoginUserModel model)
+	public async Task<RefreshToken> Login(LoginUserModel model)
 	{
 		using var dbContext = await contextFactory.CreateDbContextAsync();
 
@@ -35,10 +35,12 @@ public class UserAccount : IUserAccount
 		if (user.PasswordHash != hashedPassword)
 			throw new Exception("Incorrect password!");
 
-		user.RefreshTokens.Add(jwtGenerator.GenerateRefreshToken());
+		var refreshToken = jwtGenerator.GenerateRefreshToken();
+
+        user.RefreshTokens.Add(refreshToken);
 		await dbContext.SaveChangesAsync();
 
-		return user;
+		return refreshToken;
 	}
 
 	public async Task<User> Register(RegisterUserModel model)

@@ -49,7 +49,7 @@ public class JwtGenerator : IJwtGenerator
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             }),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.Add(AccessTokenLifetime),
             SigningCredentials = credentials
         };
 
@@ -120,7 +120,6 @@ public class JwtGenerator : IJwtGenerator
     private Guid? GetUserIdFromAccessToken(string accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(Secret);
 
         var principle = tokenHandler.ValidateToken(accessToken, validationParameters, out var securityToken);
         var jwtToken = securityToken as JwtSecurityToken;

@@ -18,7 +18,6 @@ public class TestController : ControllerBase
     /// <summary>
     /// Doesn't require a JWT token
     /// </summary>
-    /// <returns></returns>
     [HttpGet("test/public")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult Public()
@@ -29,27 +28,19 @@ public class TestController : ControllerBase
     /// <summary>
     /// Requires a JWT token
     /// </summary>
-    /// <returns></returns>
     [Authorize]
     [HttpGet("test/secure")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Secure()
     {
-        var token = ControllerContext.HttpContext.Request.Headers
-            .Single(x => x.Key == "Authorization").Value[0]
-            .Split(' ')[1];
-
-        if (string.IsNullOrEmpty(token))
-            return BadRequest();
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var jwtToken = tokenHandler.ReadJwtToken(token);
-
+        var userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+        var userName = User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))?.Value;
+        
         var userInfo = new
         {
-            userId = jwtToken.Claims.First(x => x.Type == "id").Value,
-            userName = jwtToken.Subject
+            userId = userId,
+            userName = userName
         };
 
         return Ok(userInfo);

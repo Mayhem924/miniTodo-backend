@@ -1,25 +1,48 @@
+using Microsoft.EntityFrameworkCore;
+using miniTodo.Api.Configuration;
+using miniTodo.Api.Data;
+using miniTodo.Api.Services.JwtGenerator;
+using miniTodo.Api.Services.UserAccount;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var services = builder.Services;
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Services
+services.AddControllers();
 
+services.AddEndpointsApiExplorer();
+
+// Configurations
+services.AddAppAuthentication(builder.Configuration);
+services.AddAppSwagger();
+
+services.AddDbContextFactory<ApplicationDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("Default");
+    options.UseSqlite(connectionString);
+});
+
+services.AddSingleton<IUserAccount, UserAccount>();
+services.AddSingleton<IJwtGenerator, JwtGenerator>();
+
+// Build application
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
+app.UseAppSwagger(builder.Configuration);
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+    var dbContext = contextFactory.CreateDbContext();
+
+    dbContext.Database.Migrate();
+}
 
 app.Run();

@@ -2,9 +2,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using miniTodo.Api.Controllers.UserAccount.Models;
-using miniTodo.Services.JwtToken;
-using miniTodo.Services.UserAccount;
-using miniTodo.Services.UserAccount.Models;
+using miniTodo.Api.Services.JwtGenerator;
+using miniTodo.Api.Services.UserAccount;
+using miniTodo.Api.Services.UserAccount.Models;
 
 [ApiController]
 public class UserController : ControllerBase
@@ -33,14 +33,14 @@ public class UserController : ControllerBase
         };
 
         var user = await userAccount.Login(model);
-        var token = await jwtGenerator.GenerateToken(user);
+        var token = await jwtGenerator.GenerateAccessToken(user);
 
         var result = new AuthenticationResponse
         {
             UserId = user.Id,
             UserName = user.UserName,
             AccessToken = token,
-            RefreshToken = null
+            //RefreshToken = user.RefreshToken.Token
         };
 
         return Ok(result);
@@ -66,14 +66,14 @@ public class UserController : ControllerBase
         };
 
         var user = await userAccount.Register(model);
-        var token = await jwtGenerator.GenerateToken(user);
+        var token = await jwtGenerator.GenerateAccessToken(user);
 
         var result = new AuthenticationResponse
         {
             UserId = user.Id,
             UserName = user.UserName,
             AccessToken = token,
-            RefreshToken = null
+            //RefreshToken = user.RefreshToken.Token
         };
 
         return Ok(result);

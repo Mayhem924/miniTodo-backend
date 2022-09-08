@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using miniTodo.Api.Services.JwtGenerator;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace miniTodo.Api.Controllers.Test;
@@ -7,6 +8,13 @@ namespace miniTodo.Api.Controllers.Test;
 [ApiController]
 public class TestController : ControllerBase
 {
+    private readonly IJwtGenerator jwtGenerator;
+
+    public TestController(IJwtGenerator jwtGenerator)
+    {
+        this.jwtGenerator = jwtGenerator;
+    }
+
     /// <summary>
     /// Doesn't require a JWT token
     /// </summary>
@@ -26,7 +34,7 @@ public class TestController : ControllerBase
     [HttpGet("test/secure")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public IActionResult Secure()
+    public async Task<IActionResult> Secure()
     {
         var token = ControllerContext.HttpContext.Request.Headers
             .Single(x => x.Key == "Authorization").Value[0]
@@ -36,12 +44,12 @@ public class TestController : ControllerBase
             return BadRequest();
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenValue = tokenHandler.ReadJwtToken(token);
+        var jwtToken = tokenHandler.ReadJwtToken(token);
 
         var userInfo = new
         {
-            userId = tokenValue?.Claims.Single(x => x.Type == "id").Value,
-            userName = tokenValue?.Subject
+            userId = jwtToken.Claims.First(x => x.Type == "id").Value,
+            userName = jwtToken.Subject
         };
 
         return Ok(userInfo);

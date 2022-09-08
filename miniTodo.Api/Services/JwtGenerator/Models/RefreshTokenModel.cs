@@ -1,4 +1,4 @@
-﻿namespace miniTodo.Services.UserAccount.Models;
+﻿namespace miniTodo.Api.Services.JwtGenerator.Models;
 
 public class RefreshTokenModel
 {

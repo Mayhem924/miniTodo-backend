@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Api.Configuration;
 using miniTodo.Api.Data;
-using miniTodo.Services.JwtToken;
-using miniTodo.Services.UserAccount;
+using miniTodo.Api.Services.JwtGenerator;
+using miniTodo.Api.Services.UserAccount;
 
 var builder = WebApplication.CreateBuilder(args);
 

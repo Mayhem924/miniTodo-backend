@@ -32,15 +32,15 @@ public class UserController : ControllerBase
             Password = request.Password
         };
 
-        var user = await userAccount.Login(model);
-        var token = await jwtGenerator.GenerateAccessToken(user);
+        var refreshToken = await userAccount.Login(model);
+        var token = await jwtGenerator.GenerateAccessToken(refreshToken.User);
 
         var result = new AuthenticationResponse
         {
-            UserId = user.Id,
-            UserName = user.UserName,
+            UserId = refreshToken.User.Id,
+            UserName = refreshToken.User.UserName,
             AccessToken = token,
-            //RefreshToken = user.RefreshToken.Token
+            RefreshToken = refreshToken.Token
         };
 
         return Ok(result);
@@ -73,7 +73,7 @@ public class UserController : ControllerBase
             UserId = user.Id,
             UserName = user.UserName,
             AccessToken = token,
-            //RefreshToken = user.RefreshToken.Token
+            RefreshToken = user.RefreshTokens.First().Token
         };
 
         return Ok(result);

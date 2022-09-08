@@ -13,8 +13,8 @@ using System.Text;
 
 public class JwtGenerator : IJwtGenerator
 {
-    public string Secret { get; init; }
-    public TimeSpan AccessTokenLifetime { get; init; }
+    private readonly string secret;
+    private readonly TimeSpan accessTokenLifetime;
 
     private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
     private readonly TokenValidationParameters validationParameters;
@@ -27,15 +27,13 @@ public class JwtGenerator : IJwtGenerator
         this.contextFactory = contextFactory;
         this.validationParameters = validationParameters;
 
-        Secret = configuration["JwtSettings:Secret"];
-        AccessTokenLifetime = TimeSpan.Parse(configuration["JwtSettings:AccessTokenLifetime"]);
+        secret = configuration["JwtSettings:Secret"];
+        accessTokenLifetime = TimeSpan.Parse(configuration["JwtSettings:AccessTokenLifetime"]);
     }
 
     public async Task<string> GenerateAccessToken(User user)
     {
-        using var dbContext = await contextFactory.CreateDbContextAsync();
-
-        var key = Encoding.ASCII.GetBytes(Secret);
+        var key = Encoding.ASCII.GetBytes(secret);
 
         var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -49,12 +47,11 @@ public class JwtGenerator : IJwtGenerator
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             }),
-            Expires = DateTime.UtcNow.Add(AccessTokenLifetime),
+            Expires = DateTime.UtcNow.Add(accessTokenLifetime),
             SigningCredentials = credentials
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-
         return tokenHandler.WriteToken(token);
     }
 

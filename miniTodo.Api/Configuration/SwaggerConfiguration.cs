@@ -13,18 +13,13 @@ public static class SwaggerConfiguration
             options.SupportNonNullableReferenceTypes();
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "miniTodo Backend", Version = "v1" });
 
-            var security = new Dictionary<string, IEnumerable<string>>
-            {
-                { "Bearer", new string[0] }
-            };
-
             var securityScheme = new OpenApiSecurityScheme
             {
                 Description = "JWT Bearer Token",
                 Name = "Authorization",
                 Scheme = JwtBearerDefaults.AuthenticationScheme,
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey
+                Type = SecuritySchemeType.Http
             };
 
             options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);

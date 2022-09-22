@@ -1,20 +1,19 @@
 ﻿namespace miniTodo.Api.Services.JwtGenerator;
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using miniTodo.Api.Data;
-using miniTodo.Api.Data.Entities;
-using miniTodo.Api.Services.JwtGenerator.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Data;
+using Data.Entities;
+using Models;
 
 public class JwtGenerator : IJwtGenerator
 {
-    public string Secret { get; init; }
-    public TimeSpan AccessTokenLifetime { get; init; }
+    private readonly string secret;
+    private readonly TimeSpan accessTokenLifetime;
 
     private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
     private readonly TokenValidationParameters validationParameters;
@@ -27,15 +26,13 @@ public class JwtGenerator : IJwtGenerator
         this.contextFactory = contextFactory;
         this.validationParameters = validationParameters;
 
-        Secret = configuration["JwtSettings:Secret"];
-        AccessTokenLifetime = TimeSpan.Parse(configuration["JwtSettings:AccessTokenLifetime"]);
+        secret = configuration["JwtSettings:Secret"];
+        accessTokenLifetime = TimeSpan.Parse(configuration["JwtSettings:AccessTokenLifetime"]);
     }
 
     public async Task<string> GenerateAccessToken(User user)
     {
-        using var dbContext = await contextFactory.CreateDbContextAsync();
-
-        var key = Encoding.ASCII.GetBytes(Secret);
+        var key = Encoding.ASCII.GetBytes(secret);
 
         var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -49,18 +46,17 @@ public class JwtGenerator : IJwtGenerator
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             }),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.Add(accessTokenLifetime),
             SigningCredentials = credentials
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-
         return tokenHandler.WriteToken(token);
     }
 
     public async Task<RefreshTokenModel> RefreshToken(RefreshTokenModel model)
     {
-        using var dbContext = await contextFactory.CreateDbContextAsync();
+        await using var dbContext = await contextFactory.CreateDbContextAsync();
         var userId = GetUserIdFromAccessToken(model.AccessToken);
 
         var user = dbContext.Users
@@ -120,7 +116,6 @@ public class JwtGenerator : IJwtGenerator
     private Guid? GetUserIdFromAccessToken(string accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(Secret);
 
         var principle = tokenHandler.ValidateToken(accessToken, validationParameters, out var securityToken);
         var jwtToken = securityToken as JwtSecurityToken;

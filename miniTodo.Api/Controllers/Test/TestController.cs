@@ -1,20 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using miniTodo.Api.Services.JwtGenerator;
-using System.IdentityModel.Tokens.Jwt;
+﻿namespace miniTodo.Api.Controllers.Test;
 
-namespace miniTodo.Api.Controllers.Test;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 public class TestController : ControllerBase
 {
-    private readonly IJwtGenerator jwtGenerator;
-
-    public TestController(IJwtGenerator jwtGenerator)
-    {
-        this.jwtGenerator = jwtGenerator;
-    }
-
     /// <summary>
     /// Doesn't require a JWT token
     /// </summary>
@@ -36,13 +27,7 @@ public class TestController : ControllerBase
     {
         var userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
         var userName = User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))?.Value;
-        
-        var userInfo = new
-        {
-            userId = userId,
-            userName = userName
-        };
 
-        return Ok(userInfo);
+        return Ok(new { userId, userName });
     }
 }

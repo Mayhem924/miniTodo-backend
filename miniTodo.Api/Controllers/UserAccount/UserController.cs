@@ -1,8 +1,8 @@
 ﻿namespace miniTodo.Api.Controllers.UserAccount;
 
 using Microsoft.AspNetCore.Mvc;
-using miniTodo.Api.Controllers.UserAccount.Models;
-using miniTodo.Api.Services.JwtGenerator;
+using Models;
+using Services.JwtGenerator;
 using miniTodo.Api.Services.UserAccount;
 using miniTodo.Api.Services.UserAccount.Models;
 

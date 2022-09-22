@@ -1,15 +1,14 @@
 ﻿namespace miniTodo.Api.Services.JwtGenerator;
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using miniTodo.Api.Data;
-using miniTodo.Api.Data.Entities;
-using miniTodo.Api.Services.JwtGenerator.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Data;
+using Data.Entities;
+using Models;
 
 public class JwtGenerator : IJwtGenerator
 {
@@ -57,7 +56,7 @@ public class JwtGenerator : IJwtGenerator
 
     public async Task<RefreshTokenModel> RefreshToken(RefreshTokenModel model)
     {
-        using var dbContext = await contextFactory.CreateDbContextAsync();
+        await using var dbContext = await contextFactory.CreateDbContextAsync();
         var userId = GetUserIdFromAccessToken(model.AccessToken);
 
         var user = dbContext.Users

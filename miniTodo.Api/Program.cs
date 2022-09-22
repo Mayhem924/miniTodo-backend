@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using miniTodo.Api.Configuration;
 using miniTodo.Api.Data;
+using miniTodo.Api.Data.Entities;
 using miniTodo.Api.Services.JwtGenerator;
 using miniTodo.Api.Services.UserAccount;
 
@@ -23,6 +25,7 @@ services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
+services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 services.AddSingleton<IUserAccount, UserAccount>();
 services.AddSingleton<IJwtGenerator, JwtGenerator>();
 
